@@ -1,15 +1,14 @@
 package io.redstonerdev.verticalscroll.mixin;
 
+import io.redstonerdev.verticalscroll.ColumnScroller;
+import io.redstonerdev.verticalscroll.VerticalScrollConfig;
 import io.redstonerdev.verticalscroll.VerticalScrollMod;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ContainerInput;
-import net.minecraft.world.inventory.InventoryMenu;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -17,6 +16,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Environment(EnvType.CLIENT)
 @Mixin(MouseHandler.class)
 public class MouseMixin {
+
+    // Accumulated scroll distance, so a single item advance requires a full
+    // "notch" of travel regardless of how many (possibly tiny) events the mouse sends.
+    @Unique
+    private static double verticalscroll_accumulated = 0.0;
 
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
     private void verticalscroll_onMouseScroll(long window, double xDelta, double yDelta, CallbackInfo ci) {
@@ -28,31 +32,25 @@ public class MouseMixin {
         if (!VerticalScrollMod.modifierKey.isDown()) return;
 
         ci.cancel();
-        rotateColumn(minecraft, yDelta > 0);
-    }
 
-    private static void rotateColumn(Minecraft minecraft, boolean scrollUp) {
-        LocalPlayer player = minecraft.player;
-        if (player == null || minecraft.gameMode == null) return;
+        VerticalScrollConfig cfg = VerticalScrollConfig.get();
+        double sensitivity = cfg.scrollSensitivity <= 0 ? 1.0 : cfg.scrollSensitivity;
+        double threshold = 1.0 / sensitivity; // higher sensitivity -> smaller threshold
 
-        Inventory inventory = player.getInventory();
-        int hotbarIndex = ((PlayerInventoryAccessor) inventory).getSelectedSlot();
-
-        int topRowSlot = 9  + hotbarIndex;
-        int midRowSlot = 18 + hotbarIndex;
-        int botRowSlot = 27 + hotbarIndex;
-        int hotbarSlot = 36 + hotbarIndex;
-
-        InventoryMenu handler = player.inventoryMenu;
-        int containerId = handler.containerId;
-
-        int[] slots = scrollUp
-                ? new int[]{hotbarSlot, botRowSlot, midRowSlot, topRowSlot}
-                : new int[]{topRowSlot, midRowSlot, botRowSlot, hotbarSlot};
-
-        for (int slot : slots) {
-            minecraft.gameMode.handleContainerInput(containerId, slot, 0, ContainerInput.PICKUP, player);
+        double eff = yDelta > 0 ? Math.abs(yDelta) : -Math.abs(yDelta);
+        // Reset the accumulator when the user reverses direction.
+        if ((eff > 0 && verticalscroll_accumulated < 0) || (eff < 0 && verticalscroll_accumulated > 0)) {
+            verticalscroll_accumulated = 0;
         }
-        minecraft.gameMode.handleContainerInput(containerId, slots[0], 0, ContainerInput.PICKUP, player);
+        verticalscroll_accumulated += eff;
+
+        while (verticalscroll_accumulated >= threshold) {
+            verticalscroll_accumulated -= threshold;
+            ColumnScroller.rotate(minecraft, true);
+        }
+        while (verticalscroll_accumulated <= -threshold) {
+            verticalscroll_accumulated += threshold;
+            ColumnScroller.rotate(minecraft, false);
+        }
     }
 }

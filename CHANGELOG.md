@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.2.0 (unreleased)
+
+### Added
+
+- **Scroll sensitivity** — a new setting in the Vertical Scroll settings screen. The
+  scroll handler now accumulates scroll distance and advances the column one item only
+  once a `1 / sensitivity` threshold is crossed. Default `1.0` is behaviour-neutral for
+  notched wheels; high-resolution / momentum input (Magic Mouse, trackpads) no longer
+  over-scrolls. Persisted in the config file.
+- **"Scroll Column (1 step)" key binding** — rebindable, unbound by default, registered
+  in the existing Vertical Scroll controls category. Advances the column by one item per
+  press.
+- **Pop animation** — column rotations now play vanilla's hotbar pop/stretch animation
+  (the same one shown when picking up an item).
+
+### Changed
+
+- Extracted the column-rotation logic from `MouseMixin` into a shared `ColumnScroller`
+  class, reused by both the scroll wheel and the new key binding.
+
+
 ## 1.0.0 — Initial Release
 
 ### Features

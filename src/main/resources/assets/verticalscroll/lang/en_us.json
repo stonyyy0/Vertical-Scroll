@@ -3,5 +3,7 @@
   "key.category.verticalscroll.category": "Vertical Scroll",
   "key.categories.verticalscroll": "Vertical Scroll",
   "config.verticalscroll.title": "Vertical Scroll Settings",
-  "config.verticalscroll.gap": "Column Gap: %s"
+  "config.verticalscroll.gap": "Column Gap: %s",
+  "config.verticalscroll.sensitivity": "Scroll Sensitivity: %s",
+  "key.verticalscroll.scroll_step": "Scroll Column (1 step)"
 }
