@@ -1,20 +1,20 @@
 package io.redstonerdev.verticalscroll;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class VerticalScrollMod implements ClientModInitializer {
 
-    public static KeyBinding modifierKey;
-    public static KeyBinding scrollStepKey;
+    public static KeyMapping modifierKey;
+    public static KeyMapping scrollStepKey;
 
     @Override
     public void onInitializeClient() {
@@ -22,25 +22,26 @@ public class VerticalScrollMod implements ClientModInitializer {
 
         // One shared Category instance so both keys group under a single
         // "Vertical Scroll" section in Controls.
-        KeyBinding.Category category = KeyBinding.Category.create(Identifier.of("verticalscroll", "category"));
+        KeyMapping.Category category =
+                new KeyMapping.Category(Identifier.fromNamespaceAndPath("verticalscroll", "category"));
 
-        modifierKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        modifierKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.verticalscroll.modifier",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYBOARD,
                 GLFW.GLFW_KEY_LEFT_ALT,
                 category
         ));
 
         // Unbound by default; users assign it under Controls -> Vertical Scroll.
-        scrollStepKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        scrollStepKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.verticalscroll.scroll_step",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYBOARD,
                 GLFW.GLFW_KEY_UNKNOWN,
                 category
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (scrollStepKey.wasPressed()) {
+            while (scrollStepKey.consumeClick()) {
                 ColumnScroller.rotate(client, true);
             }
         });

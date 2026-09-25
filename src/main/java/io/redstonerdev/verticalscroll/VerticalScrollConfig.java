@@ -15,6 +15,7 @@ public class VerticalScrollConfig {
             .getConfigDir().resolve("verticalscroll.json");
 
     public boolean gapEnabled = false;
+    public double scrollSensitivity = 1.0;
 
     private static VerticalScrollConfig INSTANCE;
 
