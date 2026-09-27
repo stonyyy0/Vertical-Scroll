@@ -16,6 +16,10 @@ public class VerticalScrollConfig {
 
     public boolean gapEnabled = false;
 
+    public boolean invertedScroll = false;
+
+    public boolean hideHud = false;
+
     private static VerticalScrollConfig INSTANCE;
 
     public static VerticalScrollConfig get() {

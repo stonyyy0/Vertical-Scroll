@@ -1,6 +1,6 @@
 package io.redstonerdev.verticalscroll;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -36,9 +36,9 @@ public class VerticalScrollConfigScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
-        extractor.centeredText(font, title, width / 2, height / 2 - 50, 0xFFFFFF);
-        super.extractRenderState(extractor, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        guiGraphics.drawCenteredString(font, title, width / 2, height / 2 - 50, 0xFFFFFF);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override

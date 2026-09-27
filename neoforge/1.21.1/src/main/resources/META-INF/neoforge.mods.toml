@@ -1,0 +1,30 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/stonyyy0/Vertical-Scroll/issues"
+
+[[mods]]
+modId = "verticalscroll"
+version = "${version}"
+displayName = "Vertical Scroll"
+authors = "_stonyyy"
+description = "Hold a modifier key (default: Left Alt) and scroll to cycle items through the vertical column of your selected hotbar slot."
+logoFile = "icon.png"
+displayURL = "https://modrinth.com/mod/vertical-scroll"
+
+[[mixins]]
+config = "verticalscroll.mixins.json"
+
+[[dependencies.verticalscroll]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,22)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.verticalscroll]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.21.2)"
+ordering = "NONE"
+side = "CLIENT"

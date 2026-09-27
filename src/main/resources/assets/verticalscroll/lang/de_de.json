@@ -3,5 +3,7 @@
   "key.category.verticalscroll.category": "Vertikales Scrollen",
   "key.categories.verticalscroll": "Vertikales Scrollen",
   "config.verticalscroll.title": "Vertikales Scrollen Einstellungen",
-  "config.verticalscroll.gap": "Spaltenabstand: %s"
+  "config.verticalscroll.gap": "Spaltenabstand: %s",
+  "config.verticalscroll.invert_scroll": "Scroll Richtung Invertieren: %s",
+  "config.verticalscroll.hide.hud": "Hud verstecken: %s"
 }

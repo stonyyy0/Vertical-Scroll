@@ -1,8 +1,6 @@
 package io.redstonerdev.verticalscroll.mixin;
 
 import io.redstonerdev.verticalscroll.VerticalScrollMod;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.player.LocalPlayer;
@@ -13,8 +11,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import io.redstonerdev.verticalscroll.VerticalScrollConfig;
 
-@Environment(EnvType.CLIENT)
 @Mixin(MouseHandler.class)
 public class MouseMixin {
 
@@ -27,8 +25,16 @@ public class MouseMixin {
         if (minecraft.screen != null) return;
         if (!VerticalScrollMod.modifierKey.isDown()) return;
 
+        VerticalScrollConfig cfg = VerticalScrollConfig.get();
+
+        boolean scrollUp = yDelta > 0;
+
+        if(cfg.invertedScroll) {
+            scrollUp = !scrollUp;
+        }
+
         ci.cancel();
-        rotateColumn(minecraft, yDelta > 0);
+        rotateColumn(minecraft, scrollUp);
     }
 
     private static void rotateColumn(Minecraft minecraft, boolean scrollUp) {
@@ -41,18 +47,15 @@ public class MouseMixin {
         int topRowSlot = 9  + hotbarIndex;
         int midRowSlot = 18 + hotbarIndex;
         int botRowSlot = 27 + hotbarIndex;
-        int hotbarSlot = 36 + hotbarIndex;
 
         InventoryMenu handler = player.inventoryMenu;
         int containerId = handler.containerId;
 
-        int[] slots = scrollUp
-                ? new int[]{hotbarSlot, botRowSlot, midRowSlot, topRowSlot}
-                : new int[]{topRowSlot, midRowSlot, botRowSlot, hotbarSlot};
-
-        for (int slot : slots) {
-            minecraft.gameMode.handleContainerInput(containerId, slot, 0, ContainerInput.PICKUP, player);
+        int[] rows = scrollUp
+                ? new int[]{botRowSlot, midRowSlot, topRowSlot}
+                : new int[]{topRowSlot, midRowSlot, botRowSlot};
+        for (int slot : rows) {
+            minecraft.gameMode.handleContainerInput(containerId, slot, hotbarIndex, ContainerInput.SWAP, player);
         }
-        minecraft.gameMode.handleContainerInput(containerId, slots[0], 0, ContainerInput.PICKUP, player);
     }
 }

@@ -2,12 +2,10 @@ package io.redstonerdev.verticalscroll.mixin;
 
 import io.redstonerdev.verticalscroll.VerticalScrollConfig;
 import io.redstonerdev.verticalscroll.VerticalScrollMod;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -16,8 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Environment(EnvType.CLIENT)
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class InGameHudMixin {
 
     private static final int SLOT_SIZE = 20;
@@ -27,8 +24,9 @@ public class InGameHudMixin {
     @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void verticalscroll_renderColumnHud(GuiGraphicsExtractor extractor, DeltaTracker deltaTracker, CallbackInfo ci) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || minecraft.screen != null) return;
+        if (minecraft.player == null || minecraft.gui.screen() != null) return;
         if (!VerticalScrollMod.modifierKey.isDown()) return;
+        if(VerticalScrollConfig.get().hideHud) return;
 
         Inventory inventory = minecraft.player.getInventory();
         int hotbarIndex = ((PlayerInventoryAccessor) inventory).getSelectedSlot();

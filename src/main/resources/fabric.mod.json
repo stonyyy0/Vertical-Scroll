@@ -26,7 +26,8 @@
   ],
   "depends": {
     "fabricloader": ">=0.15.0",
-    "minecraft": "${mc_range}"${fabric_api_dep}
+    "minecraft": "${mc_range}",
+    "fabric-api": "*"
   },
   "suggests": {
     "modmenu": "*"
